@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Planning Tool</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --good: #047857;
+      --warn: #b45309;
+      --bad: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 32px 20px;
+      text-align: center;
+    }
+
+    header h1 { margin: 0 0 8px; font-size: 2rem; }
+    header p { margin: 0; opacity: 0.9; }
+
+    main {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    h2 { margin-top: 0; font-size: 1.2rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover { background: var(--accent-dark); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 1.35rem;
+    }
+
+    .good { color: var(--good); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      text-align: right;
+      font-size: 0.9rem;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+
+    canvas {
+      width: 100%;
+      height: 280px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: white;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 850px) {
+      main { grid-template-columns: 1fr; }
+      .form-grid, .summary-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Financial Planning Tool</h1>
+    <p>Estimate monthly cash flow, savings rate, retirement growth, and emergency fund progress.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Monthly Budget</h2>
+      <div class="form-grid">
+        <div>
+          <label for="income">Monthly take-home income</label>
+          <input id="income" type="number" value="6500" min="0" />
+        </div>
+        <div>
+          <label for="fixedExpenses">Fixed expenses</label>
+          <input id="fixedExpenses" type="number" value="3200" min="0" />
+        </div>
+        <div>
+          <label for="variableExpenses">Variable expenses</label>
+          <input id="variableExpenses" type="number" value="1200" min="0" />
+        </div>
+        <div>
+          <label for="debtPayments">Debt payments</label>
+          <input id="debtPayments" type="number" value="450" min="0" />
+        </div>
+        <div>
+          <label for="monthlySavings">Monthly savings/investing</label>
+          <input id="monthlySavings" type="number" value="1000" min="0" />
+        </div>
+        <div>
+          <label for="cashSavings">Current cash savings</label>
+          <input id="cashSavings" type="number" value="10000" min="0" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Retirement / Investment Projection</h2>
+      <div class="form-grid">
+        <div>
+          <label for="currentInvestments">Current investments</label>
+          <input id="currentInvestments" type="number" value="50000" min="0" />
+        </div>
+        <div>
+          <label for="annualReturn">Expected annual return %</label>
+          <input id="annualReturn" type="number" value="7" step="0.1" />
+        </div>
+        <div>
+          <label for="years">Years to project</label>
+          <input id="years" type="number" value="25" min="1" max="60" />
+        </div>
+        <div>
+          <label for="emergencyMonths">Emergency fund target months</label>
+          <input id="emergencyMonths" type="number" value="6" min="1" max="24" />
+        </div>
+      </div>
+      <p class="note">This is a planning estimate, not financial advice. Returns are hypothetical and do not account for taxes, inflation, fees, or market volatility.</p>
+    </section>
+
+    <section class="card full">
+      <h2>Snapshot</h2>
+      <div class="summary-grid">
+        <div class="metric">
+          <span>Monthly cash flow</span>
+          <strong id="cashFlow">$0</strong>
+        </div>
+        <div class="metric">
+          <span>Savings rate</span>
+          <strong id="savingsRate">0%</strong>
+        </div>
+        <div class="metric">
+          <span>Emergency fund target</span>
+          <strong id="emergencyTarget">$0</strong>
+        </div>
+        <div class="metric">
+          <span>Projected investment value</span>
+          <strong id="futureValue">$0</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card full">
+      <h2>Investment Growth Chart</h2>
+      <canvas id="growthChart" width="1000" height="300"></canvas>
+    </section>
+
+    <section class="card full">
+      <h2>Year-by-Year Projection</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Starting Balance</th>
+            <th>Contributions</th>
+            <th>Growth</th>
+            <th>Ending Balance</th>
+          </tr>
+        </thead>
+        <tbody id="projectionTable"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const fields = [
+      'income', 'fixedExpenses', 'variableExpenses', 'debtPayments', 'monthlySavings',
+      'cashSavings', 'currentInvestments', 'annualReturn', 'years', 'emergencyMonths'
+    ];
+
+    const currency = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    });
+
+    function value(id) {
+      return Number(document.getElementById(id).value) || 0;
+    }
+
+    function classifyMetric(element, number, goodThreshold, warnThreshold) {
+      element.className = '';
+      if (number >= goodThreshold) element.classList.add('good');
+      else if (number >= warnThreshold) element.classList.add('warn');
+      else element.classList.add('bad');
+    }
+
+    function calculateProjection(startingBalance, monthlyContribution, annualReturn, years) {
+      const rows = [];
+      let balance = startingBalance;
+      const monthlyRate = annualReturn / 100 / 12;
+
+      for (let year = 1; year <= years; year++) {
+        const start = balance;
+        let contributions = 0;
+
+        for (let month = 1; month <= 12; month++) {
+          balance += monthlyContribution;
+          contributions += monthlyContribution;
+          balance *= (1 + monthlyRate);
+        }
+
+        const growth = balance - start - contributions;
+        rows.push({ year, start, contributions, growth, end: balance });
+      }
+
+      return rows;
+    }
+
+    function drawChart(rows) {
+      const canvas = document.getElementById('growthChart');
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const padding = 40;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (!rows.length) return;
+
+      const max = Math.max(...rows.map(r => r.end));
+      const points = rows.map((row, index) => {
+        const x = padding + (index / Math.max(rows.length - 1, 1)) * (width - padding * 2);
+        const y = height - padding - (row.end / max) * (height - padding * 2);
+        return { x, y, row };
+      });
+
+      ctx.strokeStyle = '#d1d5db';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding, padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.lineTo(width - padding, height - padding);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        if (index === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = '#2563eb';
+      points.forEach(point => {
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = '#374151';
+      ctx.font = '14px Arial';
+      ctx.fillText(currency.format(max), padding + 6, padding + 14);
+      ctx.fillText('Year ' + rows[rows.length - 1].year, width - padding - 55, height - padding + 25);
+    }
+
+    function update() {
+      const income = value('income');
+      const fixedExpenses = value('fixedExpenses');
+      const variableExpenses = value('variableExpenses');
+      const debtPayments = value('debtPayments');
+      const monthlySavings = value('monthlySavings');
+      const cashSavings = value('cashSavings');
+      const currentInvestments = value('currentInvestments');
+      const annualReturn = value('annualReturn');
+      const years = Math.min(Math.max(value('years'), 1), 60);
+      const emergencyMonths = value('emergencyMonths');
+
+      const totalMonthlyExpenses = fixedExpenses + variableExpenses + debtPayments;
+      const cashFlow = income - totalMonthlyExpenses - monthlySavings;
+      const savingsRate = income > 0 ? monthlySavings / income : 0;
+      const emergencyTarget = totalMonthlyExpenses * emergencyMonths;
+      const projection = calculateProjection(currentInvestments, monthlySavings, annualReturn, years);
+      const finalValue = projection.length ? projection[projection.length - 1].end : currentInvestments;
+
+      const cashFlowEl = document.getElementById('cashFlow');
+      const savingsRateEl = document.getElementById('savingsRate');
+      const emergencyTargetEl = document.getElementById('emergencyTarget');
+      const futureValueEl = document.getElementById('futureValue');
+
+      cashFlowEl.textContent = currency.format(cashFlow);
+      savingsRateEl.textContent = `${Math.round(savingsRate * 100)}%`;
+      emergencyTargetEl.textContent = currency.format(emergencyTarget);
+      futureValueEl.textContent = currency.format(finalValue);
+
+      classifyMetric(cashFlowEl, cashFlow, 0, -500);
+      classifyMetric(savingsRateEl, savingsRate, 0.20, 0.10);
+      classifyMetric(emergencyTargetEl, cashSavings / Math.max(emergencyTarget, 1), 1, 0.5);
+      futureValueEl.className = 'good';
+
+      const table = document.getElementById('projectionTable');
+      table.innerHTML = projection.map(row => `
+        <tr>
+          <td>Year ${row.year}</td>
+          <td>${currency.format(row.start)}</td>
+          <td>${currency.format(row.contributions)}</td>
+          <td>${currency.format(row.growth)}</td>
+          <td><strong>${currency.format(row.end)}</strong></td>
+        </tr>
+      `).join('');
+
+      drawChart(projection);
+    }
+
+    fields.forEach(id => document.getElementById(id).addEventListener('input', update));
+    update();
+  </script>
+</body>
+</html>
